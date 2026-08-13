@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { Header } from './components/Header'
+import { Footer } from './components/Footer'
 import { Stepper } from './components/Stepper'
 import { LoadingSpinner } from './components/LoadingSpinner'
 import { Toast } from './components/Toast'
@@ -613,6 +614,8 @@ export default function App() {
           />
         </div>
       )}
+
+      <Footer />
     </div>
   )
 }
