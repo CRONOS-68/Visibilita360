@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visibilita360 - Market Positioning Analyzer</title>
+    <meta name="description" content="Scopri la tua posizione di mercato in 5 minuti. Analizza competitor, prezzi e opportunità con intelligenza artificiale.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #2563eb;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-image {
+            margin-top: 3rem;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            color: white;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-image p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .features h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            color: #1f2937;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: #f9fafb;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+        }
+
+        .pricing h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            color: #1f2937;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.15);
+        }
+
+        .pricing-card.featured {
+            border-color: #2563eb;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+            transform: scale(1.05);
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 1rem 0;
+        }
+
+        .price-period {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            padding: 0.75rem 0;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .pricing-features li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            background: #1f2937;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        footer p {
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            header .container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav {
+                display: flex;
+                gap: 1rem;
+            }
+
+            nav a {
+                margin-left: 0;
+            }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">V360</div>
+                Visibilita360
+            </div>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#cta">Inizia</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Scopri la tua posizione di mercato</h1>
+            <p>In 5 minuti, analizza competitor, prezzi e opportunità con intelligenza artificiale powered by Kimi 3.</p>
+
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="scrollTo('#app')">Prova Gratis</button>
+                <button class="btn btn-secondary" onclick="alert('Contattaci per demo')">Richiedi Demo</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">150+</div>
+                    <div class="stat-label">Aziende Analizzate</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Competitor Tracciati</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Accuratezza</div>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <p>📊 <strong>Wizard Interattivo</strong><br>
+                Step 1: Registra azienda | Step 2: Aggiungi competitor | Step 3: Genera report AI</p>
+                <p style="margin-top: 1rem;">🤖 <strong>Powered by Kimi 3</strong><br>
+                Analisi intelligente in tempo reale</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2>Perché Visibilita360?</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Posizionamento Reale</h3>
+                    <p>Analisi accurata della tua posizione rispetto ai competitor nel mercato</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Pricing Intelligente</h3>
+                    <p>Raccomandazioni di prezzo ottimale basate su dati di mercato</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>Opportunità di Crescita</h3>
+                    <p>Identifica gap di mercato e segmenti non serviti dai competitor</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Differenziazione</h3>
+                    <p>Scopri i tuoi punti di forza e debolezze per creare una strategia vincente</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Powered by Kimi</h3>
+                    <p>Analisi intelligente e real-time con tecnologia di ultima generazione</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Veloce e Semplice</h3>
+                    <p>Risultati in 5 minuti, nessuna configurazione complicata</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2>Prezzi Semplici e Trasparenti</h2>
+
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3>Basic</h3>
+                    <div class="price">€49<span class="price-period">/mese</span></div>
+                    <ul class="pricing-features">
+                        <li>1 analisi/mese</li>
+                        <li>5 competitor</li>
+                        <li>Report positioning</li>
+                        <li>Support email</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">Scegli</button>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div style="text-align: center; margin-bottom: 1rem;">
+                        <span style="background: #2563eb; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">CONSIGLIATO</span>
+                    </div>
+                    <h3>Professional</h3>
+                    <div class="price">€75<span class="price-period">/mese</span></div>
+                    <ul class="pricing-features">
+                        <li>3 analisi/mese</li>
+                        <li>Competitor illimitati</li>
+                        <li>Pricing strategy</li>
+                        <li>Opportunità di mercato</li>
+                        <li>Export PDF</li>
+                        <li>Support prioritario</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">Inizia Ora</button>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">Custom<span class="price-period">/mese</span></div>
+                    <ul class="pricing-features">
+                        <li>Analisi illimitate</li>
+                        <li>API access</li>
+                        <li>Custom integrations</li>
+                        <li>Webhook alerts</li>
+                        <li>Dedicated account manager</li>
+                        <li>Support 24/7</li>
+                    </ul>
+                    <button class="btn btn-secondary" style="width: 100%;">Contattaci</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <div class="container">
+            <h2>Pronto a scoprire il tuo vero posizionamento?</h2>
+            <p>Inizia subito con l'analisi gratuita. Nessuna carta di credito richiesta.</p>
+            <button class="btn btn-primary" onclick="document.location.href='/app'">Accedi all'App</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Visibilita360. Tutti i diritti riservati. | Market Positioning Powered by Kimi 3 AI</p>
+        </div>
+    </footer>
+
+    <script>
+        function scrollTo(selector) {
+            const el = document.querySelector(selector);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
