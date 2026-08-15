@@ -7,31 +7,38 @@ tabella `commercialisti_leads` (`src/database/schema.sql`) e al template CSV
 in `data/templates/commercialisti_leads_template.csv`, quindi l'output può
 essere importato senza rimappare colonne.
 
-## Parametri da personalizzare prima dell'uso
+## Parametri di questo giro (Fase 1 — Lombardia)
 
-Prima di lanciare la ricerca, sostituisci questi valori con quelli reali:
+Primo batch: Lombardia, con priorità a studi piccoli e medi rispetto ai
+grandi network. Quando si passerà ad altre regioni, aggiorna questa tabella
+e la sezione "Ambito di ricerca" nel prompt sottostante.
 
-| Parametro | Default proposto | Note |
+| Parametro | Valore | Note |
 |---|---|---|
-| Area geografica | Italia, priorità a capoluoghi di provincia >50.000 abitanti | Restringi a regioni/città se hai già zone target |
-| Numero di studi da raccogliere | 200 | Alza/abbassa in base al carico che il team commerciale può gestire |
-| Dimensione studio | Da 1 a 20 dipendenti (esclude big four / grandi network) | Coerente con target "PMI" di Visibilita360 |
+| Area geografica | Lombardia — tutte le province, priorità a Milano, Monza e Brianza, Bergamo, Brescia, Varese, Como | Le altre regioni seguiranno in batch successivi |
+| Numero di studi da raccogliere | 150 | Alza/abbassa in base al carico che il team commerciale può gestire |
+| Dimensione studio | Piccoli e medi: indicativamente 1-15 dipendenti, priorità a 1-8 professionisti | Escludere esplicitamente studi con più di 20 dipendenti e i grandi network/Big Four |
 | Specializzazione preferita | Fiscale, contabilità PMI, consulenza societaria | Escludi studi mono-tema non affini (es. solo revisione legale) |
 
 ## Prompt per Antigravity
 
 ```
-Obiettivo: raccogliere un elenco di studi commercialisti italiani da inserire
-come lead in un CRM. Non inventare mai dati: se un campo non è verificabile,
+Obiettivo: raccogliere un elenco di studi commercialisti in Lombardia da
+inserire come lead in un CRM, con priorità a studi piccoli e medi rispetto
+ai grandi network. Non inventare mai dati: se un campo non è verificabile,
 lascialo vuoto e scrivilo in "note".
 
 Ambito di ricerca:
-- Area geografica: [AREA GEOGRAFICA]
-- Numero target di studi: [NUMERO TARGET]
-- Dimensione studio: [DIMENSIONE STUDIO]
-- Specializzazione preferita: [SPECIALIZZAZIONE]
-- Escludi: grandi network internazionali (Big Four e simili), studi senza
-  sito web o recapiti verificabili, doppioni (stesso studio già raccolto).
+- Area geografica: Lombardia, tutte le province, priorità a Milano, Monza e
+  Brianza, Bergamo, Brescia, Varese, Como
+- Numero target di studi: 150
+- Dimensione studio: piccoli e medi, indicativamente 1-15 dipendenti, con
+  priorità a studi da 1 a 8 professionisti
+- Specializzazione preferita: fiscale, contabilità PMI, consulenza
+  societaria
+- Escludi: studi con più di 20 dipendenti, grandi network nazionali o
+  internazionali (Big Four e simili), studi senza sito web o recapiti
+  verificabili, doppioni (stesso studio già raccolto).
 
 Fonti da usare, in ordine di priorità:
 1. Albo ufficiale ODCEC (Ordine dei Dottori Commercialisti e degli Esperti
@@ -101,7 +108,7 @@ Formato di output:
 - Se un campo contiene la virgola, racchiudilo tra virgolette doppie.
 - Non lasciare righe vuote né duplicati.
 - Consegna il file con nome:
-  commercialisti_leads_[AREA GEOGRAFICA]_[DATA].csv
+  commercialisti_leads_lombardia_[DATA].csv
 
 Intestazione CSV esatta da usare (nell'ordine):
 ragione_sociale,forma_giuridica,partita_iva,codice_fiscale,numero_iscrizione_albo,ordine_territoriale,indirizzo,cap,citta,provincia,regione,telefono,email,pec,sito_web,numero_dipendenti_stimato,anno_fondazione,specializzazioni,descrizione,target_clienti,referente_nome,referente_ruolo,linkedin_studio,linkedin_referente,fonte,data_rilevazione,note
