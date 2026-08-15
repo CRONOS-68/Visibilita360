@@ -1,50 +1,37 @@
-import axios, { AxiosInstance } from 'axios';
-import { KimiAnalysisRequest, KimiAnalysisResponse } from '../types/market';
+import Anthropic from '@anthropic-ai/sdk';
+import { AnalysisRequest, AnalysisResponse } from '../types/market';
 
-export class KimiClient {
-  private client: AxiosInstance;
-  private apiKey: string;
+export class ClaudeClient {
+  private client: Anthropic;
   private model: string;
 
   constructor() {
-    this.apiKey = process.env.KIMI_API_KEY || '';
-    this.model = process.env.KIMI_MODEL || 'moonshot-v1-128k';
-
-    if (!this.apiKey) {
-      throw new Error('KIMI_API_KEY is not configured');
+    if (!process.env.ANTHROPIC_API_KEY) {
+      throw new Error('ANTHROPIC_API_KEY is not configured');
     }
 
-    this.client = axios.create({
-      baseURL: process.env.KIMI_API_BASE_URL || 'https://api.moonshot.cn/v1',
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    this.model = process.env.CLAUDE_MODEL || 'claude-sonnet-5';
+    this.client = new Anthropic();
   }
 
-  async analyzeMarketPositioning(request: KimiAnalysisRequest): Promise<KimiAnalysisResponse> {
+  async analyzeMarketPositioning(request: AnalysisRequest): Promise<AnalysisResponse> {
     const prompt = this.buildMarketPositioningPrompt(request);
 
     try {
-      const response = await this.client.post('/chat/completions', {
+      const response = await this.client.messages.create({
         model: this.model,
+        max_tokens: 4000,
+        system:
+          'Tu sei un esperto di strategia di mercato e posizionamento competitivo. Fornisci analisi dettagliate, dati-driven e actionable per le aziende che vogliono capire la loro posizione di mercato.',
         messages: [
-          {
-            role: 'system',
-            content:
-              'Tu sei un esperto di strategia di mercato e posizionamento competitivo. Fornisci analisi dettagliate, dati-driven e actionable per le aziende che vogliono capire la loro posizione di mercato.',
-          },
           {
             role: 'user',
             content: prompt,
           },
         ],
-        temperature: 0.7,
-        max_tokens: 4000,
       });
 
-      const analysisText = response.data.choices[0].message.content;
+      const analysisText = this.extractText(response);
 
       return {
         analysis: analysisText,
@@ -53,7 +40,7 @@ export class KimiClient {
         data_gaps: this.identifyDataGaps(request),
       };
     } catch (error) {
-      console.error('Kimi API Error:', error);
+      console.error('Claude API Error:', error);
       throw new Error(`Failed to analyze market positioning: ${error}`);
     }
   }
@@ -62,7 +49,7 @@ export class KimiClient {
     company_profile: string,
     competitor_pricing: string[],
     market_context: string
-  ): Promise<KimiAnalysisResponse> {
+  ): Promise<AnalysisResponse> {
     const prompt = `
 Analizza la strategia di pricing per l'azienda seguente nel contesto del mercato.
 
@@ -84,24 +71,20 @@ Fornisci:
 `;
 
     try {
-      const response = await this.client.post('/chat/completions', {
+      const response = await this.client.messages.create({
         model: this.model,
+        max_tokens: 3000,
+        system:
+          'Sei un esperto di pricing strategy e analisi economica. Fornisci recomendazioni specifiche con dati concreti.',
         messages: [
-          {
-            role: 'system',
-            content:
-              'Sei un esperto di pricing strategy e analisi economica. Fornisci recomendazioni specifiche con dati concreti.',
-          },
           {
             role: 'user',
             content: prompt,
           },
         ],
-        temperature: 0.7,
-        max_tokens: 3000,
       });
 
-      const analysisText = response.data.choices[0].message.content;
+      const analysisText = this.extractText(response);
 
       return {
         analysis: analysisText,
@@ -110,7 +93,7 @@ Fornisci:
         data_gaps: [],
       };
     } catch (error) {
-      console.error('Kimi API Error (Pricing):', error);
+      console.error('Claude API Error (Pricing):', error);
       throw new Error(`Failed to analyze pricing strategy: ${error}`);
     }
   }
@@ -119,7 +102,7 @@ Fornisci:
     company_industry: string,
     current_position: string,
     market_trends: string[]
-  ): Promise<KimiAnalysisResponse> {
+  ): Promise<AnalysisResponse> {
     const prompt = `
 Identifica opportunità di mercato per un'azienda nel settore ${company_industry}.
 
@@ -139,24 +122,20 @@ Analizza e fornisci:
 `;
 
     try {
-      const response = await this.client.post('/chat/completions', {
+      const response = await this.client.messages.create({
         model: this.model,
+        max_tokens: 3500,
+        system:
+          'Sei un esperto di strategia di mercato e identificazione di opportunità. Fornisci insights actionable basati su dati di mercato.',
         messages: [
-          {
-            role: 'system',
-            content:
-              'Sei un esperto di strategia di mercato e identificazione di opportunità. Fornisci insights actionable basati su dati di mercato.',
-          },
           {
             role: 'user',
             content: prompt,
           },
         ],
-        temperature: 0.8,
-        max_tokens: 3500,
       });
 
-      const analysisText = response.data.choices[0].message.content;
+      const analysisText = this.extractText(response);
 
       return {
         analysis: analysisText,
@@ -165,12 +144,12 @@ Analizza e fornisci:
         data_gaps: [],
       };
     } catch (error) {
-      console.error('Kimi API Error (Opportunities):', error);
+      console.error('Claude API Error (Opportunities):', error);
       throw new Error(`Failed to identify market opportunities: ${error}`);
     }
   }
 
-  private buildMarketPositioningPrompt(request: KimiAnalysisRequest): string {
+  private buildMarketPositioningPrompt(request: AnalysisRequest): string {
     return `
 Analizza il posizionamento di mercato dell'azienda seguente.
 
@@ -193,6 +172,13 @@ Fornisci un'analisi completa che includa:
 7. Metriche chiave da monitorare
 8. Piano d'azione con priorità
 `;
+  }
+
+  private extractText(response: Anthropic.Message): string {
+    const block = response.content.find(
+      (b): b is Anthropic.TextBlock => b.type === 'text'
+    );
+    return block?.text ?? '';
   }
 
   private extractRecommendations(text: string): string[] {
@@ -221,7 +207,7 @@ Fornisci un'analisi completa che includa:
         ];
   }
 
-  private identifyDataGaps(request: KimiAnalysisRequest): string[] {
+  private identifyDataGaps(request: AnalysisRequest): string[] {
     const gaps: string[] = [];
 
     if (!request.company_profile || request.company_profile.length < 50) {
@@ -250,20 +236,20 @@ Fornisci un'analisi completa che includa:
 
   async testConnection(): Promise<boolean> {
     try {
-      const response = await this.client.post('/chat/completions', {
+      const response = await this.client.messages.create({
         model: this.model,
+        max_tokens: 10,
         messages: [
           {
             role: 'user',
             content: 'Rispondi con "OK"',
           },
         ],
-        max_tokens: 10,
       });
 
-      return response.status === 200;
+      return response.content.length > 0;
     } catch (error) {
-      console.error('Kimi Connection Test Failed:', error);
+      console.error('Claude Connection Test Failed:', error);
       return false;
     }
   }

@@ -73,14 +73,14 @@ export interface Action {
   responsibility?: string;
 }
 
-export interface KimiAnalysisRequest {
+export interface AnalysisRequest {
   company_profile: string;
   competitors_data: string;
   market_context: string;
   analysis_type: 'positioning' | 'pricing_strategy' | 'market_opportunity' | 'competitive_analysis';
 }
 
-export interface KimiAnalysisResponse {
+export interface AnalysisResponse {
   analysis: string;
   recommendations: string[];
   confidence_score: number;

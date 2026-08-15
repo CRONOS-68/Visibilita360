@@ -2,21 +2,21 @@ import { Request, Response } from 'express';
 import { Database } from '../database/db';
 import { MarketDataService } from '../services/market-data';
 import { PositioningGenerator } from '../services/positioning-generator';
-import { KimiClient } from '../services/kimi-client';
+import { ClaudeClient } from '../services/claude-client';
 
 export class MarketPositioningHandlers {
   private db: Database;
   private marketData: MarketDataService;
   private positioningGenerator: PositioningGenerator;
-  private kimi: KimiClient;
+  private claude: ClaudeClient;
 
   constructor() {
     this.db = new Database();
-    this.kimi = new KimiClient();
+    this.claude = new ClaudeClient();
     this.marketData = new MarketDataService(this.db);
     this.positioningGenerator = new PositioningGenerator(
       this.db,
-      this.kimi,
+      this.claude,
       this.marketData
     );
   }
@@ -245,12 +245,12 @@ export class MarketPositioningHandlers {
   async healthCheck(req: Request, res: Response): Promise<void> {
     try {
       const dbHealthy = await this.db.testConnection();
-      const kimiHealthy = await this.kimi.testConnection();
+      const claudeHealthy = await this.claude.testConnection();
 
       res.json({
-        status: dbHealthy && kimiHealthy ? 'healthy' : 'degraded',
+        status: dbHealthy && claudeHealthy ? 'healthy' : 'degraded',
         database: dbHealthy ? 'connected' : 'disconnected',
-        kimi_api: kimiHealthy ? 'connected' : 'disconnected',
+        claude_api: claudeHealthy ? 'connected' : 'disconnected',
         timestamp: new Date().toISOString(),
       });
     } catch (error) {

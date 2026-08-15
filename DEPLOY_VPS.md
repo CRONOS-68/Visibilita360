@@ -44,9 +44,8 @@ npm install
 
 # Crea .env
 cat > .env << 'EOF'
-KIMI_API_KEY=sk-nEVeRwja3GDMAf1PDNWdIQ2T47iPSA0fDZKJdqI3KGxGgXbS
-KIMI_API_BASE_URL=https://api.moonshot.cn/v1
-KIMI_MODEL=moonshot-v1-128k
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+CLAUDE_MODEL=claude-sonnet-5
 
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/visibilita360
 DB_HOST=localhost

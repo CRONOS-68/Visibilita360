@@ -1,5 +1,5 @@
 import { Database } from '../database/db';
-import { KimiClient } from './kimi-client';
+import { ClaudeClient } from './claude-client';
 import { MarketDataService } from './market-data';
 import { PositioningReport, Action, Company, Competitor, MarketAnalysis } from '../types/market';
 import { v4 as uuidv4 } from 'uuid';
@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class PositioningGenerator {
   constructor(
     private db: Database,
-    private kimiClient: KimiClient,
+    private claudeClient: ClaudeClient,
     private marketData: MarketDataService
   ) {}
 
@@ -25,7 +25,7 @@ export class PositioningGenerator {
     const competitorsSummary = this.marketData.buildCompetitorsSummary(competitors, pricing);
     const marketContextSummary = this.marketData.buildMarketContextSummary(marketAnalysis);
 
-    const kimiAnalysis = await this.kimiClient.analyzeMarketPositioning({
+    const analysis = await this.claudeClient.analyzeMarketPositioning({
       company_profile: companyProfileSummary,
       competitors_data: competitorsSummary,
       market_context: marketContextSummary,
@@ -34,8 +34,8 @@ export class PositioningGenerator {
 
     const report = await this.savePositioningReport(
       company_id,
-      kimiAnalysis.analysis,
-      kimiAnalysis.recommendations
+      analysis.analysis,
+      analysis.recommendations
     );
 
     return report;
@@ -206,17 +206,17 @@ export class PositioningGenerator {
       (p) => `${p.product_name}: ${p.price}${p.currency} (${p.pricing_model})`
     );
 
-    const kimiAnalysis = await this.kimiClient.analyzePricingStrategy(
+    const analysis = await this.claudeClient.analyzePricingStrategy(
       companyProfileSummary,
       competitorPricingList,
       marketContextSummary
     );
 
-    const tiers = this.extractPricingTiers(kimiAnalysis.analysis);
+    const tiers = this.extractPricingTiers(analysis.analysis);
 
     return {
-      strategy: kimiAnalysis.analysis,
-      recommendations: kimiAnalysis.recommendations,
+      strategy: analysis.analysis,
+      recommendations: analysis.recommendations,
       pricing_tiers: tiers,
     };
   }
@@ -236,16 +236,16 @@ export class PositioningGenerator {
 
     const trends = marketAnalysis?.key_trends || ['Trend in definizione', 'Mercato in evoluzione'];
 
-    const kimiAnalysis = await this.kimiClient.identifyMarketOpportunities(
+    const analysis = await this.claudeClient.identifyMarketOpportunities(
       company.industry,
       companyProfileSummary,
       trends
     );
 
     return {
-      opportunities: kimiAnalysis.recommendations.slice(0, 3),
-      gaps: kimiAnalysis.data_gaps,
-      recommended_actions: kimiAnalysis.recommendations.slice(3),
+      opportunities: analysis.recommendations.slice(0, 3),
+      gaps: analysis.data_gaps,
+      recommended_actions: analysis.recommendations.slice(3),
     };
   }
 

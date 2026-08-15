@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
   res.json({
     name: 'Visibilita360 - Market Positioning API',
     version: '0.1.0',
-    description: 'Market Positioning & Competitor Analysis using Kimi 3 API',
+    description: 'Market Positioning & Competitor Analysis using Claude Sonnet 5',
     endpoints: {
       health: '/api/v1/health',
       register_company: 'POST /api/v1/companies',
@@ -62,7 +62,7 @@ async function startServer() {
     app.listen(port, () => {
       console.log(`Market Positioning API listening on port ${port}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`Kimi API Model: ${process.env.KIMI_MODEL || 'moonshot-v1-128k'}`);
+      console.log(`Claude Model: ${process.env.CLAUDE_MODEL || 'claude-sonnet-5'}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
