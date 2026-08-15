@@ -84,9 +84,49 @@ CREATE TABLE IF NOT EXISTS actions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Commercialisti leads table (CRM enrichment target: studi commercialisti)
+CREATE TABLE IF NOT EXISTS commercialisti_leads (
+  id UUID PRIMARY KEY,
+  ragione_sociale VARCHAR(255) NOT NULL,
+  forma_giuridica VARCHAR(100),
+  partita_iva VARCHAR(20),
+  codice_fiscale VARCHAR(20),
+  numero_iscrizione_albo VARCHAR(50),
+  ordine_territoriale VARCHAR(150),
+  indirizzo VARCHAR(255),
+  cap VARCHAR(10),
+  citta VARCHAR(100),
+  provincia VARCHAR(5),
+  regione VARCHAR(100),
+  telefono VARCHAR(50),
+  email VARCHAR(255),
+  pec VARCHAR(255),
+  sito_web VARCHAR(255),
+  numero_dipendenti_stimato INTEGER,
+  anno_fondazione INTEGER,
+  specializzazioni JSONB,
+  descrizione TEXT,
+  target_clienti VARCHAR(255),
+  referente_nome VARCHAR(150),
+  referente_ruolo VARCHAR(100),
+  linkedin_studio VARCHAR(255),
+  linkedin_referente VARCHAR(255),
+  fonte VARCHAR(255),
+  data_rilevazione DATE,
+  note TEXT,
+  stato_lead VARCHAR(50) NOT NULL DEFAULT 'nuovo',
+  company_id UUID REFERENCES companies(id) ON DELETE SET NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(partita_iva)
+);
+
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_competitors_company_id ON competitors(company_id);
 CREATE INDEX IF NOT EXISTS idx_price_points_competitor_id ON price_points(competitor_id);
 CREATE INDEX IF NOT EXISTS idx_market_analysis_company_id ON market_analysis(company_id);
 CREATE INDEX IF NOT EXISTS idx_positioning_reports_company_id ON positioning_reports(company_id);
 CREATE INDEX IF NOT EXISTS idx_actions_report_id ON actions(report_id);
+CREATE INDEX IF NOT EXISTS idx_commercialisti_leads_citta ON commercialisti_leads(citta);
+CREATE INDEX IF NOT EXISTS idx_commercialisti_leads_provincia ON commercialisti_leads(provincia);
+CREATE INDEX IF NOT EXISTS idx_commercialisti_leads_stato ON commercialisti_leads(stato_lead);

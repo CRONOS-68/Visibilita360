@@ -1,0 +1,34 @@
+export interface CommercialistaLead {
+  id: string;
+  ragione_sociale: string;
+  forma_giuridica?: string;
+  partita_iva?: string;
+  codice_fiscale?: string;
+  numero_iscrizione_albo?: string;
+  ordine_territoriale?: string;
+  indirizzo?: string;
+  cap?: string;
+  citta?: string;
+  provincia?: string;
+  regione?: string;
+  telefono?: string;
+  email?: string;
+  pec?: string;
+  sito_web?: string;
+  numero_dipendenti_stimato?: number;
+  anno_fondazione?: number;
+  specializzazioni?: string[];
+  descrizione?: string;
+  target_clienti?: string;
+  referente_nome?: string;
+  referente_ruolo?: string;
+  linkedin_studio?: string;
+  linkedin_referente?: string;
+  fonte?: string;
+  data_rilevazione?: Date;
+  note?: string;
+  stato_lead: 'nuovo' | 'contattato' | 'qualificato' | 'scartato';
+  company_id?: string;
+  created_at: Date;
+  updated_at: Date;
+}
