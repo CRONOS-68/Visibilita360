@@ -44,7 +44,7 @@ npm install
 
 # Crea .env
 cat > .env << 'EOF'
-KIMI_API_KEY=sk-nEVeRwja3GDMAf1PDNWdIQ2T47iPSA0fDZKJdqI3KGxGgXbS
+KIMI_API_KEY=your_kimi_api_key_here
 KIMI_API_BASE_URL=https://api.moonshot.cn/v1
 KIMI_MODEL=moonshot-v1-128k
 

@@ -62,7 +62,7 @@ npm install
 cp .env.example .env
 
 # Imposta le variabili (IMPORTANTE!):
-KIMI_API_KEY=sk-nEVeRwja3GDMAf1PDNWdIQ2T47iPSA0fDZKJdqI3KGxGgXbS
+KIMI_API_KEY=your_kimi_api_key_here
 DB_HOST=localhost
 DB_USER=postgres
 DB_PASSWORD=postgres

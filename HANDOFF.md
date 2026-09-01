@@ -12,7 +12,7 @@
 ### ✅ **Backend API** (COMPLETATO)
 - Express.js + TypeScript su porta 3000
 - PostgreSQL database schema completo
-- **Integrazione Kimi 3 API** (`sk-nEVeRwja3GDMAf1PDNWdIQ2T47iPSA0fDZKJdqI3KGxGgXbS`)
+- **Integrazione Kimi 3 API** (chiave configurata via variabile d'ambiente `KIMI_API_KEY`, non versionata)
 - 6 endpoint di market analysis:
   - POST `/companies` - Registra azienda
   - POST `/companies/{id}/competitors` - Aggiungi competitor
@@ -107,8 +107,8 @@ http://localhost:3001
 
 ### `.env` (Backend)
 ```env
-# Kimi 3 API (FORNITO)
-KIMI_API_KEY=sk-nEVeRwja3GDMAf1PDNWdIQ2T47iPSA0fDZKJdqI3KGxGgXbS
+# Kimi 3 API (imposta la tua chiave, vedi .env.example)
+KIMI_API_KEY=your_kimi_api_key_here
 KIMI_API_BASE_URL=https://api.moonshot.cn/v1
 KIMI_MODEL=moonshot-v1-128k
 
@@ -211,7 +211,7 @@ createdb visibilita360
 **Soluzione**: 
 ```bash
 # Aggiungi a .env
-KIMI_API_KEY=sk-nEVeRwja3GDMAf1PDNWdIQ2T47iPSA0fDZKJdqI3KGxGgXbS
+KIMI_API_KEY=your_kimi_api_key_here
 ```
 
 ---
