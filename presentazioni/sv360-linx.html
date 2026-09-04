@@ -1,0 +1,415 @@
+<title>SV360 per LINX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root{
+  --ink:#0E2E36; --ink2:#16414C; --ink3:#27616B;
+  --paper:#F4F7F4; --paper2:#E6EDE8; --card:#FFFFFF;
+  --rust:#BC4620; --ochre:#DDA02B; --sage:#6E9186;
+  --line:#D2DCD6; --muted:#4F6F74;
+  --disp:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"Source Sans 3","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{background:#DCE3DE;font-family:var(--body);color:var(--ink);margin:0;padding:18px 0 40px}
+.deck{width:1120px;margin:0 auto;zoom:var(--s,1);display:flex;flex-direction:column;gap:18px}
+.page{width:1120px;height:792px;position:relative;overflow:hidden;background:var(--paper);
+  box-shadow:0 10px 34px rgba(14,46,54,.18);padding:52px 56px 44px;display:flex;flex-direction:column}
+.page.dark{background:var(--ink);color:#EAF1ED}
+
+/* ---- typography ---- */
+h1,h2,h3,h4{font-family:var(--disp);margin:0;text-wrap:balance;font-weight:700;letter-spacing:-.015em}
+h1{font-size:60px;line-height:1.02;font-weight:800}
+h2{font-size:38px;line-height:1.05}
+h3{font-size:19px;line-height:1.15}
+h4{font-size:14px;line-height:1.2}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);font-weight:600}
+.dark .eyebrow{color:var(--ochre)}
+.lead{font-size:19px;line-height:1.5;color:var(--muted);max-width:60ch}
+.dark .lead{color:#A9C2BD}
+.num{font-family:var(--disp);font-variant-numeric:tabular-nums;font-weight:800}
+.mono{font-family:var(--mono)}
+
+/* ---- page head ---- */
+.phead{display:flex;align-items:baseline;justify-content:space-between;gap:24px;
+  border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:26px}
+.phead .sub{font-size:15px;color:var(--muted);max-width:46ch;text-align:right}
+.pnum{position:absolute;right:56px;bottom:26px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.14em}
+.dark .pnum{color:#7C9C99}
+
+/* ---- cover ---- */
+.cover{display:grid;grid-template-columns:1.08fr .92fr;gap:40px;flex:1;align-items:center}
+.cover-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(234,241,237,.22);
+  border-top:1px solid rgba(234,241,237,.22);margin:0 -56px -44px;padding:0}
+.tile{background:var(--ink);padding:22px 20px 26px;display:flex;flex-direction:column;gap:7px}
+.tile .k{font-family:var(--disp);font-weight:800;font-size:31px;color:var(--ochre);line-height:1}
+.tile .v{font-size:13.5px;color:#B6CCC7;line-height:1.35}
+.brandbar{display:flex;align-items:center;gap:12px;margin-bottom:30px}
+.logo{width:34px;height:34px;border-radius:9px;background:var(--ochre);color:var(--ink);
+  display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:15px}
+.brandbar .nm{font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:-.01em}
+.brandbar .sep{width:16px;height:1px;background:rgba(234,241,237,.4)}
+.brandbar .cl{font-family:var(--mono);font-size:12px;color:#9DB8B4;letter-spacing:.1em}
+
+/* ---- engines (p2) ---- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;flex:1}
+.eng{background:var(--card);border:1px solid var(--line);padding:22px 24px 20px;display:flex;flex-direction:column;gap:13px;position:relative}
+.eng::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--sage))}
+.eng .top{display:flex;align-items:center;gap:12px}
+.eng .ico{width:38px;height:38px;flex:none;color:var(--accent)}
+.eng .idx{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.14em}
+.eng .claim{font-size:15.5px;line-height:1.4;color:var(--ink2)}
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:auto}
+.step{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--paper2);
+  border:1px solid var(--line);padding:6px 9px;color:var(--ink2);white-space:nowrap}
+.arw{color:var(--accent);font-size:13px;font-weight:700}
+.rev{display:flex;align-items:center;gap:8px;border-top:1px dashed var(--line);padding-top:11px;
+  font-size:12.5px;color:var(--muted)}
+.rev b{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--rust);letter-spacing:.06em}
+
+/* ---- value (p3) ---- */
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.vcol h4{font-family:var(--mono);font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.vitem{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:start}
+.vitem .b{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;margin-top:2px;
+  font-family:var(--mono);font-size:10px;font-weight:600;color:#fff}
+.vitem .t{font-size:15px;line-height:1.35}
+.vitem .t span{display:block;font-size:13px;color:var(--muted);line-height:1.3;margin-top:2px}
+.loop{margin-top:22px;background:var(--ink);color:#EAF1ED;padding:20px 24px 18px;display:flex;flex-direction:column;gap:12px}
+.loop-h{display:flex;align-items:baseline;justify-content:space-between}
+.loop-h .t{font-family:var(--disp);font-weight:700;font-size:19px}
+.loop-h .s{font-size:13px;color:#A9C2BD}
+.cycle{display:flex;align-items:stretch;gap:0}
+.cyc{flex:1;padding:12px 14px;border-left:1px solid rgba(234,241,237,.2);display:flex;flex-direction:column;gap:5px}
+.cyc:first-child{border-left:0;padding-left:0}
+.cyc .n{font-family:var(--mono);font-size:10px;color:var(--ochre);letter-spacing:.14em}
+.cyc .x{font-size:14px;line-height:1.3;color:#DCE9E5}
+
+/* ---- offer (p4) ---- */
+.forms{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.form{background:var(--card);border:1px solid var(--line);padding:18px 20px;display:flex;flex-direction:column;gap:8px}
+.form.reco{border:2px solid var(--rust)}
+.form .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted)}
+.form.reco .lbl{color:var(--rust)}
+.form .ttl{font-family:var(--disp);font-weight:700;font-size:18px}
+.form .d{font-size:13.5px;line-height:1.4;color:var(--muted)}
+.form .pill{margin-top:auto;font-family:var(--mono);font-size:11px;background:var(--paper2);padding:6px 9px;color:var(--ink2)}
+.split{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;flex:1}
+.bars{display:flex;flex-direction:column;gap:11px;margin-top:10px}
+.bar .bl{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted);margin-bottom:5px}
+.bar .bl b{font-family:var(--disp);font-size:15px;color:var(--ink)}
+.track{height:26px;background:var(--paper2);display:flex}
+.fill{background:var(--ink3);display:flex;align-items:center;justify-content:flex-end}
+.fill .q{background:var(--ochre);height:100%;width:20%}
+.qlab{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:5px;letter-spacing:.04em}
+.qlab b{color:var(--rust);font-weight:600}
+.tl{display:flex;gap:0;margin-top:14px}
+.tstep{flex:1;padding-right:12px;position:relative}
+.tstep .d{font-family:var(--mono);font-size:10.5px;color:var(--rust);letter-spacing:.1em}
+.tstep .r{height:5px;background:var(--paper2);margin:8px 0 10px;position:relative}
+.tstep .r::after{content:"";position:absolute;inset:0 12px 0 0;background:var(--ink3)}
+.tstep:last-child .r::after{inset:0}
+.tstep .x{font-size:13.5px;line-height:1.3}
+.cta{margin:20px -56px -44px;background:var(--ink);color:#EAF1ED;padding:22px 56px;display:flex;
+  align-items:center;justify-content:space-between;gap:30px}
+.cta .h{font-family:var(--disp);font-weight:700;font-size:25px;letter-spacing:-.01em}
+.cta .s{font-size:14px;color:#A9C2BD;margin-top:4px}
+.cta .btn{font-family:var(--mono);font-size:12px;letter-spacing:.08em;background:var(--ochre);color:var(--ink);
+  padding:13px 20px;font-weight:600;white-space:nowrap}
+.note{font-size:11px;color:var(--muted);line-height:1.4;margin-top:10px;max-width:70ch}
+
+/* ---- funnel svg text ---- */
+svg text{font-family:var(--mono)}
+@media print{
+  body{background:#fff;padding:0}
+  .deck{zoom:1!important;gap:0}
+  .page{box-shadow:none;break-after:page;page-break-after:always}
+  .page:last-child{break-after:auto;page-break-after:auto}
+}
+@page{size:A4 landscape;margin:0}
+</style>
+
+<div class="deck">
+
+<!-- ============ 1 ============ -->
+<section class="page dark">
+  <div class="brandbar">
+    <div class="logo">S</div>
+    <div class="nm">SV360</div>
+    <div class="sep"></div>
+    <div class="cl">PROPOSTA DI PARTNERSHIP · LINX</div>
+    <div class="cl" style="margin-left:auto">01 / 04</div>
+  </div>
+  <div class="cover">
+    <div>
+      <div class="eyebrow">700 aziende · un'unica infrastruttura digitale</div>
+      <h1 style="margin:14px 0 18px">Un solo sportello<br>digitale per tutti<br>i soci LINX.</h1>
+      <p class="lead">Bandi profilati che arrivano solo a chi sono utili. Automazioni costruite su misura. Contabilità e legale preparati dall'AI e <b style="color:#EAF1ED;font-weight:600">validati dai professionisti dell'associazione</b>.</p>
+      <p class="lead" style="margin-top:14px;font-size:16px">LINX non compra software: apre un canale di servizi e ne trattiene una quota.</p>
+    </div>
+    <svg id="net" viewBox="0 0 460 460" width="100%" role="img" aria-label="700 soci, l'avviso raggiunge solo le aziende pertinenti"></svg>
+  </div>
+  <div class="cover-tiles">
+    <div class="tile"><div class="k">700</div><div class="v">soci raggiungibili con un solo canale</div></div>
+    <div class="tile"><div class="k">0 €</div><div class="v">di investimento a carico di LINX</div></div>
+    <div class="tile"><div class="k">%</div><div class="v">quota all'associazione su ogni servizio</div></div>
+    <div class="tile"><div class="k">↻</div><div class="v">pagabile in crediti di circuito</div></div>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="page">
+  <div class="phead">
+    <div>
+      <div class="eyebrow">Come funziona</div>
+      <h2 style="margin-top:8px">Quattro motori, un solo ingresso</h2>
+    </div>
+    <p class="sub">Il socio entra da un unico posto. Dietro, quattro servizi che si alimentano a vicenda: chi riceve un bando spesso scopre di aver bisogno di un'automazione, e viceversa.</p>
+  </div>
+
+  <div class="grid2">
+    <!-- radar -->
+    <div class="eng" style="--accent:#BC4620">
+      <div class="top">
+        <svg class="ico" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <circle cx="20" cy="20" r="16"/><circle cx="20" cy="20" r="10"/><circle cx="20" cy="20" r="4"/>
+          <path d="M20 20 L33 11" stroke-width="2.2"/><circle cx="29" cy="13" r="2.6" fill="currentColor" stroke="none"/>
+        </svg>
+        <div><div class="idx">MOTORE 01</div><h3>Radar bandi</h3></div>
+      </div>
+      <p class="claim">Ogni socio riceve <b>solo</b> i bandi compatibili con il suo codice ATECO, dimensione, sede e tipo di investimento. Niente newsletter che nessuno apre.</p>
+      <div class="flow">
+        <span class="step">Profilo socio</span><span class="arw">→</span>
+        <span class="step">Filtro</span><span class="arw">→</span>
+        <span class="step">Push mirata</span>
+      </div>
+      <div class="rev"><b>PER LINX</b> il servizio che riattiva i soci silenti</div>
+    </div>
+
+    <!-- officina -->
+    <div class="eng" style="--accent:#DDA02B">
+      <div class="top">
+        <svg class="ico" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <path d="M11 5h13l6 6v24H11z"/><path d="M24 5v6h6"/><path d="M15 21l3.5 3.5L26 17"/><path d="M15 29h11"/>
+        </svg>
+        <div><div class="idx">MOTORE 02</div><h3>Officina bandi</h3></div>
+      </div>
+      <p class="claim">L'avviso da solo non serve. SV360 porta il socio dall'alert alla domanda protocollata e alla rendicontazione finale.</p>
+      <div class="flow">
+        <span class="step">Pre-check</span><span class="arw">→</span>
+        <span class="step">Dossier</span><span class="arw">→</span>
+        <span class="step">Invio</span><span class="arw">→</span>
+        <span class="step">Rendiconto</span>
+      </div>
+      <div class="rev"><b>RICAVO</b> quota fissa a pratica + success fee sul contributo ottenuto</div>
+    </div>
+
+    <!-- automazioni -->
+    <div class="eng" style="--accent:#27616B">
+      <div class="top">
+        <svg class="ico" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <circle cx="20" cy="20" r="5.5"/>
+          <path d="M20 6v4M20 30v4M6 20h4M30 20h4M10.5 10.5l2.8 2.8M26.7 26.7l2.8 2.8M29.5 10.5l-2.8 2.8M13.3 26.7l-2.8 2.8"/>
+          <circle cx="20" cy="20" r="13.5" stroke-dasharray="3 4"/>
+        </svg>
+        <div><div class="idx">MOTORE 03</div><h3>Automazioni su misura</h3></div>
+      </div>
+      <p class="claim">Preventivi, DDT, solleciti, listini, prima nota, report: il nostro ingegnere sostituisce con software le attività che il socio ripete ogni settimana.</p>
+      <div class="flow">
+        <span class="step">Audit 30 min</span><span class="arw">→</span>
+        <span class="step">Sviluppo</span><span class="arw">→</span>
+        <span class="step">Canone mensile</span>
+      </div>
+      <div class="rev"><b>RICAVO</b> progetto a preventivo + manutenzione ricorrente</div>
+    </div>
+
+    <!-- assistenza -->
+    <div class="eng" style="--accent:#6E9186">
+      <div class="top">
+        <svg class="ico" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <path d="M20 7v27"/><path d="M11 11h18"/><path d="M11 11L6 22h10z"/><path d="M29 11l-5 11h10z"/><path d="M13 34h14"/>
+        </svg>
+        <div><div class="idx">MOTORE 04</div><h3>Contabile &amp; legale</h3></div>
+      </div>
+      <p class="claim">L'AI prepara la bozza in minuti; commercialisti e legali <b>dell'associazione</b> verificano e firmano. Loro smettono di fare lavoro ripetitivo e guadagnano sulla revisione.</p>
+      <div class="flow">
+        <span class="step">Domanda</span><span class="arw">→</span>
+        <span class="step">Bozza AI</span><span class="arw">→</span>
+        <span class="step">Validazione professionista</span>
+      </div>
+      <div class="rev"><b>PER LINX</b> i professionisti del circuito restano al centro, con più margine</div>
+    </div>
+  </div>
+  <div class="pnum">02 / 04</div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="page">
+  <div class="phead">
+    <div>
+      <div class="eyebrow">Il valore</div>
+      <h2 style="margin-top:8px">Chi ci guadagna, e come</h2>
+    </div>
+    <p class="sub">Due beneficiari diversi, un solo movimento: più servizi usati dai soci significa più transato dentro il circuito.</p>
+  </div>
+
+  <div class="vgrid">
+    <div class="vcol">
+      <h4>L'azienda socia</h4>
+      <div class="vitem"><div class="b" style="background:#BC4620">1</div><div class="t">Non perde più un bando<span>l'avviso arriva prima della scadenza, già filtrato</span></div></div>
+      <div class="vitem"><div class="b" style="background:#BC4620">2</div><div class="t">Ore ripetitive che spariscono<span>ciò che si fa a mano ogni settimana diventa software</span></div></div>
+      <div class="vitem"><div class="b" style="background:#BC4620">3</div><div class="t">Risposte contabili e legali in giornata<span>bozza AI, verifica del professionista, nessuna attesa</span></div></div>
+      <div class="vitem"><div class="b" style="background:#BC4620">4</div><div class="t">Sa dove si trova sul mercato<span>analisi di posizionamento, competitor e prezzi</span></div></div>
+      <div class="vitem"><div class="b" style="background:#BC4620">5</div><div class="t">Un solo interlocutore<span>invece di quattro fornitori diversi da coordinare</span></div></div>
+      <div class="vitem" style="border-bottom:0"><div class="b" style="background:#BC4620">6</div><div class="t">Paga anche in crediti di circuito<span>spesa che non esce dalla cassa in euro</span></div></div>
+    </div>
+    <div class="vcol">
+      <h4>L'associazione LINX</h4>
+      <div class="vitem"><div class="b" style="background:#27616B">1</div><div class="t">Un ricavo ricorrente nuovo<span>quota su canoni, pratiche e progetti, senza investire</span></div></div>
+      <div class="vitem"><div class="b" style="background:#27616B">2</div><div class="t">Soci silenti che tornano attivi<span>una notifica utile vale più di dieci comunicati</span></div></div>
+      <div class="vitem"><div class="b" style="background:#27616B">3</div><div class="t">Un argomento per acquisirne di nuovi<span>servizi esclusivi che fuori dal circuito non esistono</span></div></div>
+      <div class="vitem"><div class="b" style="background:#27616B">4</div><div class="t">Osservatorio LINX<span>dati aggregati e anonimi: report annuale, stampa, tavoli istituzionali</span></div></div>
+      <div class="vitem"><div class="b" style="background:#27616B">5</div><div class="t">Professionisti del circuito valorizzati<span>più pratiche gestite a parità di ore</span></div></div>
+      <div class="vitem" style="border-bottom:0"><div class="b" style="background:#27616B">6</div><div class="t">Domanda interna che si incontra<span>ogni fabbisogno rilevato diventa una richiesta indirizzata a un altro socio</span></div></div>
+    </div>
+  </div>
+
+  <div class="loop">
+    <div class="loop-h">
+      <div class="t">Il valore resta dentro il circuito</div>
+      <div class="s">SV360 incassa in crediti e li rispende dai soci LINX</div>
+    </div>
+    <div class="cycle">
+      <div class="cyc"><div class="n">01</div><div class="x">Il socio attiva un servizio e paga anche in crediti</div></div>
+      <div class="cyc"><div class="n">02</div><div class="x">SV360 spende quei crediti presso altre aziende del circuito</div></div>
+      <div class="cyc"><div class="n">03</div><div class="x">Il transato interno cresce: è il numero che conta per LINX</div></div>
+      <div class="cyc"><div class="n">04</div><div class="x">L'associazione incassa la sua quota e finanzia nuovi servizi</div></div>
+      <div class="cyc" style="justify-content:center"><div class="n" style="color:#DDA02B">↻ RITORNO</div><div class="x" style="color:#A9C2BD">Ogni euro speso in SV360 torna nel circuito invece di uscirne</div></div>
+    </div>
+  </div>
+  <div class="pnum">03 / 04</div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="page">
+  <div class="phead">
+    <div>
+      <div class="eyebrow">L'accordo</div>
+      <h2 style="margin-top:8px">Tre formule, un pilota</h2>
+    </div>
+    <p class="sub">Scegliete voi il modello. In tutti e tre, LINX non anticipa nulla e può fermarsi dopo il pilota.</p>
+  </div>
+
+  <div class="forms">
+    <div class="form reco">
+      <div class="lbl">FORMULA A · CONSIGLIATA</div>
+      <div class="ttl">Revenue share</div>
+      <div class="d">Il socio paga SV360, l'associazione trattiene una quota su tutto: canoni, pratiche bandi, progetti di automazione.</div>
+      <div class="pill">RISCHIO LINX: ZERO</div>
+    </div>
+    <div class="form">
+      <div class="lbl">FORMULA B</div>
+      <div class="ttl">Bundle associativo</div>
+      <div class="d">LINX acquista i posti in blocco e include il servizio base nella quota associativa: il prezzo per socio crolla, l'adesione diventa più difficile da rifiutare.</div>
+      <div class="pill">LEVA SUL RINNOVO QUOTE</div>
+    </div>
+    <div class="form">
+      <div class="lbl">FORMULA C</div>
+      <div class="ttl">Licenza white-label</div>
+      <div class="d">La piattaforma esce con il marchio dell'associazione. SV360 resta il motore tecnico dietro le quinte.</div>
+      <div class="pill">CANONE DI LICENZA ANNUO</div>
+    </div>
+  </div>
+
+  <div class="split">
+    <div>
+      <h4 style="font-family:var(--mono);font-weight:600;font-size:11px;letter-spacing:.16em;color:var(--muted)">SCENARI DI ADOZIONE SU 700 SOCI · SOLO CANONE BASE</h4>
+      <div class="bars">
+        <div class="bar">
+          <div class="bl"><span>Adozione prudente · <b>70 soci</b></span><b>63.000 € / anno</b></div>
+          <div class="track"><div class="fill" style="width:25%"><div class="q"></div></div></div>
+          <div class="qlab">di cui a LINX · <b>12.600 €</b></div>
+        </div>
+        <div class="bar">
+          <div class="bl"><span>Adozione realistica · <b>175 soci</b></span><b>157.500 € / anno</b></div>
+          <div class="track"><div class="fill" style="width:62.5%"><div class="q"></div></div></div>
+          <div class="qlab">di cui a LINX · <b>31.500 €</b></div>
+        </div>
+        <div class="bar">
+          <div class="bl"><span>Adozione spinta · <b>280 soci</b></span><b>252.000 € / anno</b></div>
+          <div class="track"><div class="fill" style="width:100%"><div class="q"></div></div></div>
+          <div class="qlab">di cui a LINX · <b>50.400 €</b></div>
+        </div>
+      </div>
+      <p class="note">Ipotesi: canone base 75 €/mese per azienda, quota associazione 20%. <b>Non sono inclusi</b> success fee sui bandi vinti, progetti di automazione e pacchetti di assistenza, che nell'esperienza pesano più del canone. Cifre illustrative, da ricalibrare sui dati reali LINX.</p>
+    </div>
+
+    <div>
+      <h4 style="font-family:var(--mono);font-weight:600;font-size:11px;letter-spacing:.16em;color:var(--muted)">I PRIMI 90 GIORNI</h4>
+      <div class="tl">
+        <div class="tstep"><div class="d">GG 1–15</div><div class="r"></div><div class="x">30 soci volontari, profili caricati</div></div>
+        <div class="tstep"><div class="d">GG 16–45</div><div class="r"></div><div class="x">Radar bandi acceso, prime pratiche</div></div>
+        <div class="tstep"><div class="d">GG 46–75</div><div class="r"></div><div class="x">Due automazioni pilota + sportello</div></div>
+        <div class="tstep"><div class="d">GG 76–90</div><div class="r"></div><div class="x">Numeri alla mano, si decide</div></div>
+      </div>
+      <p class="note" style="margin-top:16px">Cosa serve da LINX: l'elenco dei codici ATECO dei soci, un referente, e i nomi dei commercialisti e legali che validano. Il resto lo mettiamo noi.</p>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div>
+      <div class="h">Pilota gratuito, 60 giorni, 30 soci.</div>
+      <div class="s">Se al termine i numeri non convincono, LINX non ha speso nulla e il rapporto finisce lì.</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:18px">
+      <div class="mono" style="font-size:10.5px;color:#7C9C99;letter-spacing:.14em">04 / 04</div>
+      <div class="btn">SV360 · VISIBILITÀ360</div></div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+  // cover network: 700 soci, solo i pertinenti si accendono
+  var svg=document.getElementById('net'), NS='http://www.w3.org/2000/svg';
+  var cx=230, cy=230, dots=[], seed=7;
+  function rnd(){seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;}
+  var rings=[{r:58,n:22},{r:80,n:32},{r:102,n:40},{r:124,n:50},{r:146,n:58},{r:168,n:68},{r:190,n:78},{r:212,n:88}];
+  var total=0; rings.forEach(function(g){total+=g.n;});
+  // distribuisci 700 in proporzione
+  rings.forEach(function(g,i){
+    var n=Math.round(700*g.n/total), off=rnd()*6.28;
+    for(var k=0;k<n;k++){
+      var a=off+k/n*6.28;
+      dots.push({x:cx+Math.cos(a)*g.r,y:cy+Math.sin(a)*g.r,hot:(rnd()<0.055)});
+    }
+  });
+  var f='';
+  dots.forEach(function(d){
+    if(d.hot) return;
+    f+='<circle cx="'+d.x.toFixed(1)+'" cy="'+d.y.toFixed(1)+'" r="2.1" fill="#31555C"/>';
+  });
+  var hots=dots.filter(function(d){return d.hot;});
+  hots.forEach(function(d){
+    f+='<line x1="'+cx+'" y1="'+cy+'" x2="'+d.x.toFixed(1)+'" y2="'+d.y.toFixed(1)+'" stroke="#DDA02B" stroke-opacity="0.28" stroke-width="1"/>';
+  });
+  hots.forEach(function(d){
+    f+='<circle cx="'+d.x.toFixed(1)+'" cy="'+d.y.toFixed(1)+'" r="4.4" fill="#DDA02B"/>';
+  });
+  f+='<circle cx="'+cx+'" cy="'+cy+'" r="34" fill="#BC4620"/>';
+  f+='<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" fill="#FFF3E6" font-size="15" font-weight="600" letter-spacing="1">LINX</text>';
+  f+='<text x="16" y="440" fill="#7C9C99" font-size="11" letter-spacing="1.4">700 SOCI</text>';
+  f+='<text x="16" y="456" fill="#DDA02B" font-size="11" letter-spacing="1.4">L\'AVVISO PARTE SOLO VERSO CHI È PERTINENTE</text>';
+  svg.innerHTML=f;
+
+  function fit(){
+    var w=document.documentElement.clientWidth;
+    document.querySelector('.deck').style.setProperty('--s', Math.min(1,(w-24)/1120));
+  }
+  fit(); window.addEventListener('resize',fit);
+})();
+</script>
