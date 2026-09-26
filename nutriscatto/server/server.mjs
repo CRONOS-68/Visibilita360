@@ -4,7 +4,7 @@ import { createServer as createHttpsServer } from 'node:https';
 import { timingSafeEqual } from 'node:crypto';
 import { dirname, extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { AnalysisError, createAnalyzer } from './analyze.mjs';
+import { AnalysisError, createAnalyzer, providerModel, resolveProvider } from './analyze.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 try {
@@ -32,7 +32,8 @@ const MIME = {
 };
 
 let analyzer = null;
-const getAnalyzer = () => (analyzer ??= createAnalyzer());
+const PROVIDER = resolveProvider();
+const getAnalyzer = () => (analyzer ??= createAnalyzer(PROVIDER));
 
 // Limite semplice per IP: 40 analisi ogni 10 minuti.
 const hits = new Map();
@@ -77,8 +78,8 @@ function readJson(req) {
 }
 
 async function handleAnalyze(req, res) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return sendJson(res, 503, { error: 'Analisi foto non configurata: manca ANTHROPIC_API_KEY sul server.' });
+  if (!PROVIDER) {
+    return sendJson(res, 503, { error: 'Analisi foto non configurata: manca OPENAI_API_KEY (o ANTHROPIC_API_KEY) sul server.' });
   }
   if (!tokenOk(req)) return sendJson(res, 401, { error: 'Token non valido: impostalo in Impostazioni.' });
   if (rateLimited(req.socket.remoteAddress ?? '')) {
@@ -133,9 +134,10 @@ async function handler(req, res) {
   if (path === '/api/health') {
     return sendJson(res, 200, {
       ok: true,
-      ai: Boolean(process.env.ANTHROPIC_API_KEY),
+      ai: Boolean(PROVIDER),
+      provider: PROVIDER,
       tokenRequired: Boolean(APP_TOKEN),
-      model: process.env.CLAUDE_MODEL || 'claude-opus-5',
+      model: providerModel(PROVIDER),
     });
   }
   if (path === '/api/analyze' && req.method === 'POST') return handleAnalyze(req, res);
@@ -154,6 +156,7 @@ const tls =
 const server = tls ? createHttpsServer(tls, handler) : createHttpServer(handler);
 server.listen(PORT, () => {
   console.log(`NutriScatto in ascolto su ${tls ? 'https' : 'http'}://localhost:${PORT}`);
-  if (!process.env.ANTHROPIC_API_KEY) console.warn('Attenzione: ANTHROPIC_API_KEY non impostata, analisi foto disattivata.');
+  if (PROVIDER) console.log(`Analisi foto: ${PROVIDER} (${providerModel(PROVIDER)})`);
+  else console.warn('Attenzione: manca OPENAI_API_KEY o ANTHROPIC_API_KEY, analisi foto disattivata.');
   if (!APP_TOKEN) console.warn('Suggerimento: imposta APP_TOKEN se il server è esposto su internet.');
 });

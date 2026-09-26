@@ -110,12 +110,14 @@ export function SettingsView({
         ) : !health.ai ? (
           <div className="notice warn">
             <Icon name="alert" size={18} />
-            <span>Sul server manca ANTHROPIC_API_KEY: l’analisi delle foto è disattivata.</span>
+            <span>Sul server manca la chiave API (OPENAI_API_KEY nel file .env): l’analisi delle foto è disattivata.</span>
           </div>
         ) : (
           <div className="notice good">
             <Icon name="check" size={18} />
-            <span>Analisi foto attiva ({health.model}).</span>
+            <span>
+              Analisi foto attiva: {health.provider === 'openai' ? 'OpenAI' : 'Claude'} ({health.model}).
+            </span>
           </div>
         )}
         {(health !== 'loading' && health?.tokenRequired) || settings.appToken ? (

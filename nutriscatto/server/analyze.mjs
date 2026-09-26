@@ -1,5 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
+import OpenAI from 'openai';
+import { ContentFilterFinishReasonError, LengthFinishReasonError } from 'openai/error';
+import { zodResponseFormat } from 'openai/helpers/zod';
 import * as z from 'zod';
 
 const Per100 = z.object({
@@ -95,18 +98,18 @@ export class AnalysisError extends Error {
   }
 }
 
-export function createAnalyzer({
+function userRequest(mode, hint) {
+  if (hint.trim()) return `Indicazioni dell'utente: ${hint.trim().slice(0, 500)}`;
+  return mode === 'etichetta' ? 'Leggi questa etichetta.' : 'Analizza questo piatto.';
+}
+
+/** Analisi con Claude (Anthropic). */
+export function createClaudeAnalyzer({
   client = new Anthropic(),
   model = process.env.CLAUDE_MODEL || 'claude-opus-5',
   effort = process.env.CLAUDE_EFFORT || 'medium',
 } = {}) {
   return async function analyze({ image, mediaType = 'image/jpeg', mode = 'piatto', hint = '' }) {
-    const system = PROMPTS[mode] ?? PROMPTS.piatto;
-    const request = hint.trim()
-      ? `Indicazioni dell'utente: ${hint.trim().slice(0, 500)}`
-      : mode === 'etichetta'
-        ? 'Leggi questa etichetta.'
-        : 'Analizza questo piatto.';
     let response;
     try {
       response = await client.beta.messages.parse({
@@ -117,13 +120,13 @@ export function createAnalyzer({
         fallbacks: 'default',
         thinking: { type: 'adaptive' },
         output_config: { effort, format: betaZodOutputFormat(AnalysisSchema) },
-        system,
+        system: PROMPTS[mode] ?? PROMPTS.piatto,
         messages: [
           {
             role: 'user',
             content: [
               { type: 'image', source: { type: 'base64', media_type: mediaType, data: image } },
-              { type: 'text', text: request },
+              { type: 'text', text: userRequest(mode, hint) },
             ],
           },
         ],
@@ -148,4 +151,78 @@ export function createAnalyzer({
     }
     return normalizeAnalysis(response.parsed_output);
   };
+}
+
+/** Analisi con OpenAI (Chat Completions con output strutturato). */
+export function createOpenAIAnalyzer({
+  client = new OpenAI(),
+  model = process.env.OPENAI_MODEL || 'gpt-5.5',
+  // Vuoto = non inviare il parametro (necessario per modelli senza ragionamento, es. gpt-4.1).
+  effort = process.env.OPENAI_EFFORT ?? 'medium',
+} = {}) {
+  return async function analyze({ image, mediaType = 'image/jpeg', mode = 'piatto', hint = '' }) {
+    let completion;
+    try {
+      completion = await client.chat.completions.parse({
+        model,
+        max_completion_tokens: 16000,
+        ...(effort ? { reasoning_effort: effort } : {}),
+        response_format: zodResponseFormat(AnalysisSchema, 'analisi_pasto'),
+        messages: [
+          { role: 'system', content: PROMPTS[mode] ?? PROMPTS.piatto },
+          {
+            role: 'user',
+            content: [
+              { type: 'image_url', image_url: { url: `data:${mediaType};base64,${image}`, detail: 'high' } },
+              { type: 'text', text: userRequest(mode, hint) },
+            ],
+          },
+        ],
+      });
+    } catch (err) {
+      if (err instanceof OpenAI.AuthenticationError) {
+        throw new AnalysisError('Chiave API non valida sul server (OPENAI_API_KEY).', 500);
+      } else if (err instanceof OpenAI.RateLimitError) {
+        throw new AnalysisError('Troppe richieste o credito OpenAI esaurito: riprova più tardi.', 429);
+      } else if (err instanceof OpenAI.BadRequestError) {
+        throw new AnalysisError(`Richiesta non valida (controlla OPENAI_MODEL/OPENAI_EFFORT): ${err.message}`, 400);
+      } else if (err instanceof OpenAI.APIError) {
+        throw new AnalysisError(`Servizio di analisi non disponibile (${err.status ?? 'rete'}).`, 502);
+      } else if (err instanceof LengthFinishReasonError) {
+        throw new AnalysisError('Analisi incompleta, riprova.', 502);
+      } else if (err instanceof ContentFilterFinishReasonError) {
+        throw new AnalysisError('Il modello non ha potuto analizzare questa immagine.', 422);
+      }
+      throw err;
+    }
+    const message = completion.choices[0]?.message;
+    if (message?.refusal) throw new AnalysisError('Il modello non ha potuto analizzare questa immagine.', 422);
+    if (!message?.parsed) throw new AnalysisError('Analisi incompleta, riprova.', 502);
+    return normalizeAnalysis(message.parsed);
+  };
+}
+
+/**
+ * Sceglie il fornitore: AI_PROVIDER se impostato ("openai" o "anthropic"),
+ * altrimenti quello di cui è presente la chiave. null se non c'è nessuna chiave.
+ */
+export function resolveProvider(env = process.env) {
+  const wanted = (env.AI_PROVIDER || '').toLowerCase();
+  if (wanted === 'openai') return env.OPENAI_API_KEY ? 'openai' : null;
+  if (wanted === 'anthropic' || wanted === 'claude') return env.ANTHROPIC_API_KEY ? 'anthropic' : null;
+  if (env.ANTHROPIC_API_KEY) return 'anthropic';
+  if (env.OPENAI_API_KEY) return 'openai';
+  return null;
+}
+
+export function providerModel(provider, env = process.env) {
+  if (provider === 'openai') return env.OPENAI_MODEL || 'gpt-5.5';
+  if (provider === 'anthropic') return env.CLAUDE_MODEL || 'claude-opus-5';
+  return null;
+}
+
+export function createAnalyzer(provider = resolveProvider()) {
+  if (provider === 'openai') return createOpenAIAnalyzer();
+  if (provider === 'anthropic') return createClaudeAnalyzer();
+  throw new AnalysisError('Analisi foto non configurata: manca la chiave API sul server.', 503);
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AnalysisError, createAnalyzer, normalizeAnalysis } from './analyze.mjs';
+import { AnalysisError, createClaudeAnalyzer, createOpenAIAnalyzer, normalizeAnalysis, resolveProvider } from './analyze.mjs';
 
 const sample = {
   is_food: true,
@@ -38,7 +38,7 @@ describe('normalizeAnalysis', () => {
   });
 });
 
-describe('createAnalyzer', () => {
+describe('createClaudeAnalyzer', () => {
   const fakeClient = (response: unknown, capture: { params?: Record<string, unknown> } = {}) =>
     ({
       beta: {
@@ -53,7 +53,7 @@ describe('createAnalyzer', () => {
 
   it('invia immagine, modalità e indicazioni e restituisce il risultato normalizzato', async () => {
     const capture: { params?: Record<string, unknown> } = {};
-    const analyze = createAnalyzer({
+    const analyze = createClaudeAnalyzer({
       client: fakeClient({ stop_reason: 'end_turn', parsed_output: sample }, capture),
       model: 'claude-opus-5',
       effort: 'medium',
@@ -74,7 +74,68 @@ describe('createAnalyzer', () => {
   });
 
   it('gestisce il rifiuto del modello', async () => {
-    const analyze = createAnalyzer({ client: fakeClient({ stop_reason: 'refusal', parsed_output: null }) });
+    const analyze = createClaudeAnalyzer({ client: fakeClient({ stop_reason: 'refusal', parsed_output: null }) });
     await expect(analyze({ image: 'AAAA' })).rejects.toBeInstanceOf(AnalysisError);
+  });
+});
+
+describe('createOpenAIAnalyzer', () => {
+  const fakeClient = (response: unknown, capture: { params?: Record<string, unknown> } = {}) =>
+    ({
+      chat: {
+        completions: {
+          parse: async (params: Record<string, unknown>) => {
+            capture.params = params;
+            return response;
+          },
+        },
+      },
+    }) as never;
+
+  it('invia la foto come data URL con output strutturato', async () => {
+    const capture: { params?: Record<string, unknown> } = {};
+    const analyze = createOpenAIAnalyzer({
+      client: fakeClient({ choices: [{ message: { refusal: null, parsed: sample } }] }, capture),
+      model: 'gpt-5.5',
+      effort: 'medium',
+    });
+    const r = await analyze({ image: 'AAAA', mode: 'etichetta', hint: '' });
+    expect(r.items[0].name).toBe('Spaghetti cotti');
+    const p = capture.params as {
+      model: string;
+      reasoning_effort?: string;
+      response_format: { type: string; json_schema: { strict: boolean } };
+      messages: { role: string; content: unknown }[];
+    };
+    expect(p.model).toBe('gpt-5.5');
+    expect(p.reasoning_effort).toBe('medium');
+    expect(p.response_format.type).toBe('json_schema');
+    expect(p.response_format.json_schema.strict).toBe(true);
+    expect(p.messages[0].role).toBe('system');
+    expect(String(p.messages[0].content)).toContain('tabelle nutrizionali');
+    const parts = p.messages[1].content as { type: string; image_url?: { url: string }; text?: string }[];
+    expect(parts[0].image_url?.url).toBe('data:image/jpeg;base64,AAAA');
+    expect(parts[1].text).toBe('Leggi questa etichetta.');
+  });
+
+  it('non invia reasoning_effort se vuoto e gestisce il rifiuto', async () => {
+    const capture: { params?: Record<string, unknown> } = {};
+    const analyze = createOpenAIAnalyzer({
+      client: fakeClient({ choices: [{ message: { refusal: 'no', parsed: null } }] }, capture),
+      model: 'gpt-4.1',
+      effort: '',
+    });
+    await expect(analyze({ image: 'AAAA' })).rejects.toBeInstanceOf(AnalysisError);
+    expect(capture.params).not.toHaveProperty('reasoning_effort');
+  });
+});
+
+describe('resolveProvider', () => {
+  it('sceglie in base alle chiavi presenti', () => {
+    expect(resolveProvider({})).toBeNull();
+    expect(resolveProvider({ OPENAI_API_KEY: 'x' })).toBe('openai');
+    expect(resolveProvider({ ANTHROPIC_API_KEY: 'x' })).toBe('anthropic');
+    expect(resolveProvider({ ANTHROPIC_API_KEY: 'x', OPENAI_API_KEY: 'y', AI_PROVIDER: 'openai' })).toBe('openai');
+    expect(resolveProvider({ AI_PROVIDER: 'openai' })).toBeNull();
   });
 });

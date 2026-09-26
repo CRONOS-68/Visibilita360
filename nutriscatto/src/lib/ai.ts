@@ -57,7 +57,8 @@ export interface ServerHealth {
   ok: boolean;
   ai: boolean;
   tokenRequired: boolean;
-  model?: string;
+  provider?: 'openai' | 'anthropic' | null;
+  model?: string | null;
 }
 
 export async function serverHealth(): Promise<ServerHealth | null> {

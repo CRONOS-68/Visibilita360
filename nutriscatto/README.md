@@ -6,15 +6,15 @@ App per telefono (PWA) che conta **calorie, zuccheri, proteine e grassi** parten
 
 | Funzione | Come |
 |---|---|
-| Foto del piatto | Claude (vision) riconosce gli alimenti, **stima i grammi** con riferimenti visivi (diametro del piatto, posate, bicchiere) e restituisce valori per 100 g e indice glicemico. Puoi aggiungere indicazioni ("piatto fondo, 80 g di pasta a crudo") e correggere i grammi prima di salvare. |
+| Foto del piatto | L'intelligenza artificiale (OpenAI o Claude, a scelta) riconosce gli alimenti, **stima i grammi** con riferimenti visivi (diametro del piatto, posate, bicchiere) e restituisce valori per 100 g e indice glicemico. Puoi aggiungere indicazioni ("piatto fondo, 80 g di pasta a crudo") e correggere i grammi prima di salvare. |
 | Codice a barre | Scansione live con la fotocamera (BarcodeDetector nativo o ZXing su iPhone), oppure foto del codice, oppure numero digitato. Valori da [Open Food Facts](https://world.openfoodfacts.org). |
-| Etichetta | Se il prodotto non è nel database, fotografi la tabella nutrizionale e Claude la legge (valori per 100 g e porzione). |
+| Etichetta | Se il prodotto non è nel database, fotografi la tabella nutrizionale e l'AI la legge (valori per 100 g e porzione). |
 | A mano / pasti recenti | Inserimento manuale (per 100 g o per porzione) e "Ripeti un pasto recente" con un tocco. |
 | Tachimetro | Limite **1400 kcal**: verde fino a 1000, giallo 1000-1200, arancio 1200-1400, rosso oltre. **Si azzera a mezzanotte**; lo storico resta nel grafico degli ultimi 7 giorni. |
 | Glicemia | Curva stimata della giornata a partire dalla glicemia a digiuno (**100 mg/dL** all'inizio, obiettivo **90**), con picco, carico glicemico e minuti sopra 140. Puoi registrare le misure del glucometro: quelle a digiuno aggiornano il riferimento del modello e disegnano l'andamento verso 90. |
 | Peso | Diario delle pesate, obiettivo **−3 kg** dal peso di partenza, tendenza settimanale, data prevista e stima del deficit dal profilo (sesso, età, altezza, attività). |
 
-Tutti i dati restano **sul telefono** (localStorage), con esportazione/importazione del backup in JSON. Le foto passano dal tuo server all'API di Claude solo per l'analisi e non vengono salvate sul server; sul telefono resta una miniatura per 14 giorni.
+Tutti i dati restano **sul telefono** (localStorage), con esportazione/importazione del backup in JSON. Le foto passano dal tuo server all'API di OpenAI o Claude solo per l'analisi e non vengono salvate sul server; sul telefono resta una miniatura per 14 giorni.
 
 ## Architettura
 
@@ -22,11 +22,11 @@ Tutti i dati restano **sul telefono** (localStorage), con esportazione/importazi
 Telefono (PWA React)                          Server Node (server/server.mjs)
  ├─ dati in localStorage                       ├─ serve l'app compilata (dist/)
  ├─ Open Food Facts (diretto dal browser) ───┐ └─ POST /api/analyze ──► API Claude
- └─ foto ridotte a 1568 px ── /api/analyze ──┘      (la chiave resta sul server)
+ └─ foto ridotte a 1568 px ── /api/analyze ──┘      o API OpenAI (la chiave resta sul server)
 ```
 
 - `src/lib/glucose.ts` modello glicemico, `src/lib/gi.ts` stima indice glicemico, `src/lib/gauge.ts` fasce del tachimetro, `src/lib/weight.ts` statistiche peso.
-- `server/analyze.mjs` prompt e schema JSON per Claude (structured outputs), con fallback automatico lato server se il modello declina.
+- `server/analyze.mjs` prompt e schema JSON comuni, con due fornitori: OpenAI (Chat Completions con output strutturato) e Claude (structured outputs, con fallback automatico se il modello declina).
 
 ## Avvio in locale
 
@@ -35,7 +35,7 @@ Serve Node.js 20 o superiore.
 ```bash
 cd nutriscatto
 npm install
-cp .env.example .env        # inserisci ANTHROPIC_API_KEY
+cp .env.example .env        # inserisci OPENAI_API_KEY (o ANTHROPIC_API_KEY)
 npm run build
 npm start                   # http://localhost:8787
 ```
@@ -57,7 +57,7 @@ La fotocamera "live" (scansione del codice a barre in tempo reale) funziona solo
 ```bash
 git clone … && cd nutriscatto
 npm ci && npm run build
-cp .env.example .env   # ANTHROPIC_API_KEY e APP_TOKEN (una stringa lunga a caso)
+cp .env.example .env   # OPENAI_API_KEY (o ANTHROPIC_API_KEY) e APP_TOKEN (una stringa lunga a caso)
 ```
 
 Servizio systemd (`/etc/systemd/system/nutriscatto.service`):
@@ -95,14 +95,20 @@ Se il server è su internet imposta **APP_TOKEN** e inseriscilo nell'app in *Pro
 
 | Variabile | Default | Note |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | – | Obbligatoria per foto ed etichette. |
-| `APP_TOKEN` | vuoto | Consigliato se il server è pubblico. |
-| `PORT` | 8787 | |
+| `OPENAI_API_KEY` | – | Chiave OpenAI per foto ed etichette. |
+| `ANTHROPIC_API_KEY` | – | In alternativa, chiave Anthropic (Claude). Ne basta una. |
+| `AI_PROVIDER` | automatico | `openai` o `anthropic`, solo se hai entrambe le chiavi (senza, vince Anthropic). |
+| `OPENAI_MODEL` | `gpt-5.5` | Qualsiasi modello OpenAI con visione e output strutturato. |
+| `OPENAI_EFFORT` | `medium` | `low`/`medium`/`high`; lascialo **vuoto** con modelli senza ragionamento (es. `gpt-4.1`). |
 | `CLAUDE_MODEL` | `claude-opus-5` | `claude-sonnet-5` costa meno, con stime un po' meno precise. |
 | `CLAUDE_EFFORT` | `medium` | `high` = più ragionamento e attesa più lunga; `low` = più veloce. |
+| `APP_TOKEN` | vuoto | Consigliato se il server è pubblico. |
+| `PORT` | 8787 | |
 | `TLS_CERT`, `TLS_KEY` | – | HTTPS direttamente da Node, senza proxy. |
 
-**Costo indicativo**: qualche centesimo di dollaro per foto con Claude Opus 5 (circa 2.000 token in ingresso tra foto e istruzioni, più la risposta); circa la metà con Sonnet 5. Codice a barre e inserimento manuale sono gratuiti.
+**Costo indicativo**: pochi centesimi per foto (circa 2.000 token in ingresso tra foto e istruzioni, più la risposta); il prezzo esatto dipende dal modello scelto. Codice a barre e inserimento manuale sono gratuiti.
+
+La chiave va **solo** nel file `.env` sul server: non nel telefono e mai su GitHub (`.env` è già escluso da git).
 
 ## Il modello glicemico
 
