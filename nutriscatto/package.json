@@ -1,0 +1,35 @@
+{
+  "name": "nutriscatto",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Conta calorie da foto e codice a barre, con curva glicemica stimata e diario del peso",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "node server/server.mjs",
+    "build": "tsc -p tsconfig.json && vite build",
+    "start": "node server/server.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
+    "@zxing/browser": "^0.2.1",
+    "@zxing/library": "^0.23.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}
