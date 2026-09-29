@@ -178,23 +178,15 @@ export class MarketPositioningHandlers {
     try {
       const { company_id } = req.params;
 
-      res.json({
-        status: 'generating',
-        message: 'Report generation started. This may take a minute...',
-      });
+      const report = await this.positioningGenerator.generatePositioningReport(company_id);
 
-      // Async generation
-      setImmediate(async () => {
-        try {
-          const report = await this.positioningGenerator.generatePositioningReport(company_id);
-          console.log(`Positioning report generated for company ${company_id}`);
-        } catch (error) {
-          console.error(`Failed to generate positioning report: ${error}`);
-        }
+      res.json({
+        success: true,
+        report,
       });
     } catch (error) {
       res.status(500).json({
-        error: `Failed to start report generation: ${error}`,
+        error: `Failed to generate positioning report: ${error}`,
       });
     }
   }

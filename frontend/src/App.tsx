@@ -142,43 +142,25 @@ export default function App() {
 
     setLoading(true)
     try {
-      await apiService.generateReport(companyId)
-      setCurrentStep(3)
-      showToast('Report generato con successo! 📊', 'success')
+      const response = await apiService.generateReport(companyId)
+      const reportData = response.report
 
-      // Simula il report con dati di esempio
       setReport({
-        positioning_strategy:
-          'InvoiceAI deve posizionarsi come alternativa moderna e AI-powered ai competitor leader, enfatizzando automazione intelligente della fatturazione e user experience intuitiva per PMI italiane.',
-        competitive_advantages: [
-          'Tecnologia AI integrata per automazione contabile',
-          'UX moderna e intuitiva progettata per PMI',
-          'Pricing competitivo vs Fatture in Cloud',
-          'Focus specializzato sul mercato italiano',
-        ],
-        weaknesses: [
-          'Brand awareness limitato vs competitor consolidati',
-          'Team piccolo vs aziende enterprise',
-          'Mancanza di ecosistema completo (e-commerce, magazzino)',
-          'Matrice di funzionalità ancora in sviluppo',
-        ],
-        market_gap_opportunities: [
-          'Mercato SMB italiano in crescita (+15% annuale)',
-          'Gap nel segmento micro-imprese (<5 dipendenti)',
-          'Trend verso automazione AI ancora poco sfruttato',
-          'Mancanza di soluzione italiana con AI nativa',
-          'Opportunità partnership con consulenti tributari',
-        ],
-        pricing_strategy_recommendation:
-          'Lanciare con 3 tier: Startup €45/mese (fatturazione base + AI), Growth €89/mese (+ integrazioni bancarie), Enterprise €199/mese (+ API + support dedicato).',
-        differentiation_points: [
-          'AI nativa per categorizzazione automatica',
-          'Integrazione bancaria intelligente',
-          'Support multi-canale in italiano',
-          'Compliance GDPR e normative italiane',
-          'Community di PMI italiane',
-        ],
+        positioning_strategy: reportData.positioning_strategy || '',
+        competitive_advantages: Array.isArray(reportData.competitive_advantages)
+          ? reportData.competitive_advantages
+          : [],
+        weaknesses: Array.isArray(reportData.weaknesses) ? reportData.weaknesses : [],
+        market_gap_opportunities: Array.isArray(reportData.market_gap_opportunities)
+          ? reportData.market_gap_opportunities
+          : [],
+        pricing_strategy_recommendation: reportData.pricing_strategy_recommendation || '',
+        differentiation_points: Array.isArray(reportData.differentiation_points)
+          ? reportData.differentiation_points
+          : [],
       })
+      setCurrentStep(3)
+      showToast('Report generato con successo!', 'success')
     } catch (error) {
       showToast('Errore nella generazione del report', 'error')
       console.error(error)
