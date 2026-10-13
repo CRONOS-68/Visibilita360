@@ -183,6 +183,8 @@ ${request.competitors_data}
 CONTESTO DI MERCATO:
 ${request.market_context}
 
+NOTA SUI DATI: i "segnali tecnici" sono osservazioni sul sito pubblico del competitor. "observed" = visto direttamente, "inferred" = dedotto, "not_verifiable" = non verificabile. Basa le conclusioni sui dati osservati, indica come deduzioni quelle inferred e non inventare fatturato, traffico o budget pubblicitario.
+
 Fornisci un'analisi completa che includa:
 1. Posizionamento attuale dell'azienda nel mercato
 2. Principali vantaggi competitivi

@@ -145,6 +145,50 @@ export class MarketPositioningHandlers {
     }
   }
 
+  // Salva i segnali tecnici osservati sul sito pubblico di un competitor (es. da analisi REA)
+  async addCompetitorSignals(req: Request, res: Response): Promise<void> {
+    try {
+      const { competitor_id, signals } = req.body;
+
+      if (!competitor_id || !Array.isArray(signals) || signals.length === 0) {
+        res.status(400).json({
+          error: 'Missing required fields: competitor_id, signals (non-empty array)',
+        });
+        return;
+      }
+
+      const categories = ['technology', 'tracking', 'contact_flow', 'performance', 'content', 'other'];
+      const certainties = ['observed', 'inferred', 'not_verifiable'];
+
+      for (const s of signals) {
+        if (!s || !s.signal_name || !categories.includes(s.category)) {
+          res.status(400).json({
+            error: `Each signal needs signal_name and a category in: ${categories.join(', ')}`,
+          });
+          return;
+        }
+        if (s.certainty && !certainties.includes(s.certainty)) {
+          res.status(400).json({
+            error: `certainty must be one of: ${certainties.join(', ')}`,
+          });
+          return;
+        }
+      }
+
+      const saved = await this.marketData.addCompetitorSignals(competitor_id, signals);
+
+      res.status(201).json({
+        success: true,
+        saved_count: saved.length,
+        signals: saved,
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: `Failed to add competitor signals: ${error}`,
+      });
+    }
+  }
+
   // Ottiene il profilo di un'azienda
   async getCompanyProfile(req: Request, res: Response): Promise<void> {
     try {

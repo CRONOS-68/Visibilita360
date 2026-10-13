@@ -35,6 +35,29 @@ export interface PricePoint {
   last_updated: Date;
 }
 
+export type SignalCategory =
+  | 'technology'
+  | 'tracking'
+  | 'contact_flow'
+  | 'performance'
+  | 'content'
+  | 'other';
+
+export type SignalCertainty = 'observed' | 'inferred' | 'not_verifiable';
+
+export interface CompetitorSignal {
+  id: string;
+  competitor_id: string;
+  category: SignalCategory;
+  signal_name: string;
+  detail?: string;
+  certainty: SignalCertainty;
+  source_url?: string;
+  method: string;
+  observed_at: Date;
+  created_at: Date;
+}
+
 export interface MarketAnalysis {
   id: string;
   company_id: string;

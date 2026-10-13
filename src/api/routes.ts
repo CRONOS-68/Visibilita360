@@ -31,6 +31,12 @@ export function createRoutes(): Router {
     handlers.addPricePoint(req, res);
   });
 
+  // Segnali tecnici dal sito pubblico del competitor (es. analisi REA)
+  router.post('/competitors/:competitor_id/signals', (req: Request, res: Response) => {
+    req.body.competitor_id = req.params.competitor_id;
+    handlers.addCompetitorSignals(req, res);
+  });
+
   // Analysis and reports
   router.post('/companies/:company_id/positioning-report', (req: Request, res: Response) =>
     handlers.generatePositioningReport(req, res)

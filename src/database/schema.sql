@@ -39,6 +39,20 @@ CREATE TABLE IF NOT EXISTS price_points (
   last_updated TIMESTAMP NOT NULL
 );
 
+-- Competitor signals table (osservazioni tecniche sul sito pubblico del competitor, es. da analisi REA)
+CREATE TABLE IF NOT EXISTS competitor_signals (
+  id UUID PRIMARY KEY,
+  competitor_id UUID NOT NULL REFERENCES competitors(id) ON DELETE CASCADE,
+  category VARCHAR(50) NOT NULL,
+  signal_name VARCHAR(255) NOT NULL,
+  detail TEXT,
+  certainty VARCHAR(20) NOT NULL DEFAULT 'observed',
+  source_url VARCHAR(500),
+  method VARCHAR(50) NOT NULL DEFAULT 'rea',
+  observed_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Market analysis table
 CREATE TABLE IF NOT EXISTS market_analysis (
   id UUID PRIMARY KEY,
@@ -87,6 +101,7 @@ CREATE TABLE IF NOT EXISTS actions (
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_competitors_company_id ON competitors(company_id);
 CREATE INDEX IF NOT EXISTS idx_price_points_competitor_id ON price_points(competitor_id);
+CREATE INDEX IF NOT EXISTS idx_competitor_signals_competitor_id ON competitor_signals(competitor_id);
 CREATE INDEX IF NOT EXISTS idx_market_analysis_company_id ON market_analysis(company_id);
 CREATE INDEX IF NOT EXISTS idx_positioning_reports_company_id ON positioning_reports(company_id);
 CREATE INDEX IF NOT EXISTS idx_actions_report_id ON actions(report_id);

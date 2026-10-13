@@ -28,6 +28,13 @@ case "$mode" in
     ;;
   guard)
     tool="$(jq -r '.tool_name // ""' <<<"$input")"
+    if [ "$tool" = "Bash" ]; then
+      # Il filtro "if" del hook non sa valutare i comandi composti: filtriamo qui.
+      # Si blocca solo se REA e' in posizione di comando (rea, npx rea-agents, ...).
+      cmd="$(jq -r '.tool_input.command // ""' <<<"$input")"
+      re='(^|[;&|(`]|npx|bunx|dlx|exec)([[:space:]]+-[[:alnum:]-]+)*[[:space:]]*rea(-agents)?(@[^[:space:]]*)?([[:space:]]|$)'
+      grep -Eq "$re" <<<"$cmd" || exit 0
+    fi
     if [ "$tool" = "Skill" ]; then
       skill="$(jq -r '.tool_input.skill // ""' <<<"$input")"
       case "$skill" in

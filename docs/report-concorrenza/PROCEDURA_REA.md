@@ -32,6 +32,27 @@ Per il monitoraggio mensile: confronto con la rilevazione precedente (`compare_w
 3. Tieni separati ciò che REA ha visto e ciò che deduciamo.
 4. Compila il confronto con il sito del cliente e il piano a 30 giorni.
 
+## 4b. Salvare i segnali nell'app
+Dopo l'analisi REA, salva le osservazioni sul competitor. Il report AI di posizionamento le legge insieme a prezzi e dati di mercato.
+
+```bash
+curl -X POST http://localhost:3000/api/v1/competitors/<COMPETITOR_ID>/signals \
+  -H "Content-Type: application/json" \
+  -d '{
+    "signals": [
+      {"category": "tracking", "signal_name": "Pixel Meta", "detail": "presente nella home", "certainty": "observed", "source_url": "https://esempio-competitor.it", "method": "rea"},
+      {"category": "contact_flow", "signal_name": "Modulo contatto in 2 passaggi", "certainty": "observed", "source_url": "https://esempio-competitor.it/contatti"},
+      {"category": "tracking", "signal_name": "Probabili campagne social a pagamento", "certainty": "inferred"}
+    ]
+  }'
+```
+
+- `category`: `technology`, `tracking`, `contact_flow`, `performance`, `content`, `other`.
+- `certainty`: `observed` (visto), `inferred` (dedotto), `not_verifiable` (non verificabile).
+- `method`: `rea` per l'analisi REA, `manual` per una verifica a mano.
+
+Per ottenere il report: `POST /api/v1/companies/<COMPANY_ID>/positioning-report`. I segnali compaiono nei dati competitor passati all'AI con data e certezza.
+
 ## 5. Controllo qualità prima della consegna
 - [ ] Nessun dato di fatturato, traffico o budget presentato come certo.
 - [ ] Ogni affermazione tecnica ha una evidenza nel registro (sezione 7).

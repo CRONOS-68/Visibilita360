@@ -19,10 +19,11 @@ export class PositioningGenerator {
 
     const competitors = await this.marketData.getCompetitorsForCompany(company_id);
     const pricing = await this.marketData.getAllPricingForCompetitors(company_id);
+    const signals = await this.marketData.getAllSignalsForCompetitors(company_id);
     const marketAnalysis = await this.marketData.getLatestMarketAnalysis(company_id);
 
     const companyProfileSummary = this.marketData.buildCompanyProfileSummary(company);
-    const competitorsSummary = this.marketData.buildCompetitorsSummary(competitors, pricing);
+    const competitorsSummary = this.marketData.buildCompetitorsSummary(competitors, pricing, signals);
     const marketContextSummary = this.marketData.buildMarketContextSummary(marketAnalysis);
 
     const kimiAnalysis = await this.kimiClient.analyzeMarketPositioning({

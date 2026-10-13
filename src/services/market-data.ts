@@ -1,5 +1,13 @@
 import { Database } from '../database/db';
-import { Company, Competitor, PricePoint, MarketAnalysis } from '../types/market';
+import {
+  Company,
+  Competitor,
+  PricePoint,
+  MarketAnalysis,
+  CompetitorSignal,
+  SignalCategory,
+  SignalCertainty,
+} from '../types/market';
 import { v4 as uuidv4 } from 'uuid';
 
 export class MarketDataService {
@@ -106,6 +114,56 @@ export class MarketDataService {
     return pricePoint[0];
   }
 
+  // Salva le osservazioni tecniche sul sito pubblico di un competitor (es. da analisi REA)
+  async addCompetitorSignals(
+    competitor_id: string,
+    signals: Array<{
+      category: SignalCategory;
+      signal_name: string;
+      detail?: string;
+      certainty?: SignalCertainty;
+      source_url?: string;
+      method?: string;
+      observed_at?: string;
+    }>
+  ): Promise<CompetitorSignal[]> {
+    const saved: CompetitorSignal[] = [];
+
+    for (const s of signals) {
+      const query = `
+        INSERT INTO competitor_signals
+        (id, competitor_id, category, signal_name, detail, certainty, source_url, method, observed_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING *
+      `;
+
+      const rows = await this.db.query<CompetitorSignal>(query, [
+        uuidv4(),
+        competitor_id,
+        s.category,
+        s.signal_name,
+        s.detail || null,
+        s.certainty || 'observed',
+        s.source_url || null,
+        s.method || 'rea',
+        s.observed_at ? new Date(s.observed_at) : new Date(),
+      ]);
+      saved.push(rows[0]);
+    }
+
+    return saved;
+  }
+
+  async getAllSignalsForCompetitors(company_id: string): Promise<CompetitorSignal[]> {
+    const query = `
+      SELECT cs.* FROM competitor_signals cs
+      JOIN competitors c ON cs.competitor_id = c.id
+      WHERE c.company_id = $1
+      ORDER BY c.competitor_name, cs.category, cs.observed_at DESC
+    `;
+    return this.db.query<CompetitorSignal>(query, [company_id]);
+  }
+
   async getCompanyProfile(company_id: string): Promise<Company | null> {
     const query = 'SELECT * FROM companies WHERE id = $1';
     const result = await this.db.query<Company>(query, [company_id]);
@@ -195,7 +253,11 @@ Fondazione: ${company.founded_year || 'N/A'}
     `.trim();
   }
 
-  buildCompetitorsSummary(competitors: Competitor[], pricing: PricePoint[]): string {
+  buildCompetitorsSummary(
+    competitors: Competitor[],
+    pricing: PricePoint[],
+    signals: CompetitorSignal[] = []
+  ): string {
     let summary = 'COMPETITOR ANALYSIS:\n\n';
 
     for (const competitor of competitors) {
@@ -210,6 +272,15 @@ Fondazione: ${company.founded_year || 'N/A'}
         summary += `  Prezzi:\n`;
         competitorPrices.forEach((p) => {
           summary += `    - ${p.product_name}: ${p.price} ${p.currency} (${p.pricing_model})\n`;
+        });
+      }
+
+      const competitorSignals = signals.filter((s) => s.competitor_id === competitor.id);
+      if (competitorSignals.length > 0) {
+        summary += `  Segnali tecnici dal sito pubblico (analisi REA):\n`;
+        competitorSignals.forEach((s) => {
+          const date = new Date(s.observed_at).toLocaleDateString('it-IT');
+          summary += `    - [${s.category}] ${s.signal_name}${s.detail ? `: ${s.detail}` : ''} (${s.certainty}, ${date})\n`;
         });
       }
       summary += '\n';
