@@ -12,3 +12,6 @@ dist/
 build/
 coverage/
 .nyc_output/
+
+# REA gate (stato runtime)
+.claude/.rea-gate/

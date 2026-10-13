@@ -1,0 +1,45 @@
+{
+  "enabledMcpjsonServers": ["rea"],
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/rea-gate.sh prompt",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Skill|mcp__rea__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/rea-gate.sh guard",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(*rea-agents*)",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/rea-gate.sh guard",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "if": "Bash(rea *)",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/rea-gate.sh guard",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
