@@ -87,7 +87,25 @@
 | Dati strutturati / elementi SEO di base | [...] | [...] |
 | Banner cookie / informativa privacy visibili | ☐ Sì ☐ No | ☐ Sì ☐ No |
 
-### 3.5 Struttura del sito
+### 3.5 Presenza social (profili pubblici)
+
+*Solo dati pubblici e aggregati. Mai elenchi di follower o dati personali di singole persone.*
+
+| Dato | Competitor | Cliente | Fonte | Certezza |
+|---|---|---|---|---|
+| Profilo Instagram | [@...] | [@...] | profilo pubblico | |
+| Follower (numero) | [...] | [...] | profilo pubblico / API ufficiale | |
+| Frequenza di pubblicazione | [post/settimana] | [...] | osservazione | |
+| Engagement medio sui post pubblici | [...] | [...] | API ufficiale / manuale | |
+| Pubblicità attive | ☐ Sì ☐ No | ☐ Sì ☐ No | Meta Ad Library | |
+
+**Dal profilo al contatto (analisi REA del link in bio e del sito)**
+- Dove porta il link in bio: [landing / Linktree / WhatsApp / shop]
+- Tracciamenti presenti sulla pagina di destinazione: [pixel Meta, conversioni, ecc.]
+- Passaggi dal link al contatto: [N]
+- Parametri di tracciamento (UTM) tra profilo e sito: ☐ Sì ☐ No
+
+### 3.6 Struttura del sito
 - Pagine principali e navigazione: [...]
 - Contenuti che spingono di più (blog, casi studio, offerte): [...]
 - Novità rispetto all'analisi precedente: vedi sezione 5.

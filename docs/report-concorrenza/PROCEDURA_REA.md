@@ -67,4 +67,6 @@ Ripeti l'analisi con "usa rea ..." ogni mese, confronta con la precedente e comp
 - Non usare REA per aggirare login, protezioni anti-bot, licenze o sistemi anti-frode.
 - Non copiare codice, testi o grafica proprietaria del competitor.
 - Non promettere dati non osservabili.
+- **Social:** non usare REA né altri strumenti per estrarre elenchi di follower, né per aggirare il login di Instagram o altre piattaforme. Per i profili si usano solo dati pubblici e aggregati (profilo pubblico, API ufficiali di Meta, Meta Ad Library, Insights dell'account del cliente con il suo consenso). REA si usa sul link in bio e sul sito di destinazione, che sono pubblici.
+- Non raccogliere né profilare dati personali di singole persone (follower, commentatori, iscritti).
 - Non eseguire analisi automatiche in serie senza controllo umano: il blocco "usa rea" esiste per questo.
